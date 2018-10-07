@@ -11,6 +11,10 @@ WiFi Beacon & Client sniffing pipeline for analysing the movements of Human Traf
 
 ![img/poc-circuit.jpg](img/poc-circuit.jpg)
 
+## Architecture
+
+![img/aws-architecture.png](img/aws-architecture.png)
+
 ## Deploying CF
 
 ### IoT Vending Machine
