@@ -1,5 +1,12 @@
 # Traffic Cop
 
+WiFi Beacon & Client sniffing pipeline for analysing the movements of Human Traffickers.
+
+## Authors
+
+* Nathan Glover [@nathangloverAUS (Twitter)](https://twitter.com/nathangloverAUS), [@t04glovern (Github)](https://github.com/t04glovern)
+* Stephen Mott [@SrzStephen (Github)](https://github.com/SrzStephen)
+
 ## Proof of Concept
 
 ![img/poc-circuit.jpg](img/poc-circuit.jpg)
