@@ -1,0 +1,16 @@
+## Platform IO
+.pioenvs
+.piolibdeps
+
+## VSCode
+.vscode/c_cpp_properties.json
+.vscode/.browse.c_cpp.db*
+.vscode/launch.json
+.vscode/settings.json
+
+## Custom
+src/main.h
+certs/*
+data/*
+!certs/.gitkeep
+!data/.gitkeep

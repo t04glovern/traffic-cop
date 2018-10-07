@@ -1,0 +1,114 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Creates the DynamoDB Table and IoT Actions for consuming data from a topic",
+    "Parameters": {
+        "DynamoDBTableName": {
+            "Type": "String",
+            "Default": "TrafficCopLocations",
+            "Description": "The name of the Amazon SNS topic for AWS CloudFormation to create."
+        }
+    },
+    "Resources": {
+        "DynamoDBRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [{
+                        "Effect": "Allow",
+                        "Principal": {
+                            "Service": "iot.amazonaws.com"
+                        },
+                        "Action": "sts:AssumeRole"
+                    }]
+                },
+                "Path": "/service-role/",
+                "Policies": [{
+                    "PolicyDocument": {
+                        "Version": "2012-10-17",
+                        "Statement": [{
+                            "Effect": "Allow",
+                            "Action": "dynamodb:PutItem",
+                            "Resource": {
+                                "Fn::Sub": "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDBTableName}"
+                            }
+                        }]
+                    },
+                    "PolicyName": "TrafficCopDynamoDBRole"
+                }]
+            }
+        },
+        "IoTTopicRule": {
+            "Type": "AWS::IoT::TopicRule",
+            "Properties": {
+                "RuleName": "TrafficCopGpsDynamoDB",
+                "TopicRulePayload": {
+                    "Actions": [{
+                        "DynamoDB": {
+                            "TableName": {
+                                "Ref": "DynamoDBTableName"
+                            },
+                            "HashKeyField": "topic",
+                            "HashKeyType": "STRING",
+                            "HashKeyValue": "${topic()}",
+                            "RangeKeyField": "timestamp",
+                            "RangeKeyType": "NUMBER",
+                            "RangeKeyValue": "${timestamp()}",
+                            "RoleArn": {
+                                "Fn::GetAtt": [
+                                    "DynamoDBRole",
+                                    "Arn"
+                                ]
+                            }
+                        }
+                    }],
+                    "AwsIotSqlVersion": "2016-03-23",
+                    "RuleDisabled": false,
+                    "Sql": "SELECT * FROM 'hackathons/aws-devpost/*' WHERE location <> [0, 0] AND ssid.ssid <> \"\""
+                }
+            }
+        },
+        "TrafficCopGpsDynamoDBTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+                "AttributeDefinitions": [
+                    {
+                        "AttributeName": "topic",
+                        "AttributeType": "S"
+                      },
+                      {
+                        "AttributeName": "timestamp",
+                        "AttributeType": "N"
+                      }
+
+                ],
+                "KeySchema": [
+                    {
+                        "AttributeName": "topic",
+                        "KeyType": "HASH"
+                      },
+                      {
+                        "AttributeName": "timestamp",
+                        "KeyType": "RANGE"
+                      }
+
+                ],
+                "ProvisionedThroughput": {
+                    "ReadCapacityUnits": 5,
+                    "WriteCapacityUnits": 5
+                },
+                "TableName": {
+                    "Ref": "DynamoDBTableName"
+                }
+            }
+        }
+    },
+    "Outputs": {
+        "TableName": {
+            "Value": {
+                "Ref": "TrafficCopGpsDynamoDBTable"
+            },
+            "Description": "TrafficCop GPS DynamoDB table"
+        }
+    }
+}

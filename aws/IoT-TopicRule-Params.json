@@ -1,0 +1,4 @@
+[{
+    "ParameterKey": "DynamoDBTableName",
+    "ParameterValue": "TrafficCopLocations"
+}]

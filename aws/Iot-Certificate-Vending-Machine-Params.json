@@ -1,0 +1,17 @@
+[{
+        "ParameterKey": "DeviceTableName",
+        "ParameterValue": "deviceInfo"
+    },
+    {
+        "ParameterKey": "LambdaCodeBucket",
+        "ParameterValue": "pubz"
+    },
+    {
+        "ParameterKey": "LambdaCodeS3Key",
+        "ParameterValue": "cvm-iot.zip"
+    },
+    {
+        "ParameterKey": "LambdaFunctionName",
+        "ParameterValue": "cvm-iot-demo"
+    }
+]

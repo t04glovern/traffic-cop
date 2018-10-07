@@ -1,0 +1,15 @@
+#ifndef MAIN_H
+
+// Wifi Details
+const char *ssid = "YourWifiSSID";
+const char *password = "YourWifiPassword";
+
+const String thing_id = "YourThingID";
+
+// AWS MQTT Details
+char *aws_mqtt_server = "YourAWSThingID.iot.us-east-1.amazonaws.com";
+char *aws_mqtt_client_id = "YourMQTTClientID";
+char *aws_mqtt_thing_topic_pub = "Your/MQTT/Topic";
+char *aws_mqtt_thing_topic_sub = "Your/MQTT/Topic";
+
+#endif
