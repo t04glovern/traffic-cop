@@ -1,5 +1,9 @@
 # Traffic Cop
 
+## Proof of Concept
+
+![img/poc-circuit.jpg](img/poc-circuit.jpg)
+
 ## Deploying CF
 
 ### IoT Vending Machine
