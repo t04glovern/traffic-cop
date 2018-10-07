@@ -11,6 +11,17 @@ WiFi Beacon & Client sniffing pipeline for analysing the movements of Human Traf
 
 ![img/poc-circuit.jpg](img/poc-circuit.jpg)
 
+## Circuit Diagram
+
+![circuit/circuit-diagram_bb.jpg](circuit/circuit-diagram_bb.jpg)
+
+### BOM
+
+* [2x NodeMCU 1.0 (ESP 12 E Module)](https://www.amazon.com/NodeMCU-ESP8266-Microcontroller-Arduino-Makerdo/dp/B07BGCF3NY)
+* [1x U-blox NEO-6M GPS Module](https://core-electronics.com.au/u-blox-neo-6m-gps-module.html)
+* 1x ~2kΩ+ Resistor
+* 5x M2M Jumper Wires
+
 ## Architecture
 
 ![img/aws-architecture.png](img/aws-architecture.png)
