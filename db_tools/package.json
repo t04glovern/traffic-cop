@@ -2,7 +2,8 @@
   "name": "api",
   "version": "1.0.0",
   "scripts": {
-    "test": "node test.js"
+    "test": "node test.js",
+    "json": "node json_test.js"
   },
   "author": "Nathan Glover <nathan@glovers.id.au>",
   "license": "MIT",
