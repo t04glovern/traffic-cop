@@ -169,3 +169,27 @@ aws s3 sync frontend/ s3://traffic-cop/
 ### Extras
 
 The `db_tools` can be used in order to add new entries to the DynamoDB instance manually while testing. To use it simply run `npm install` then `npm run test`. You will need to also change the DynamoDB instance name in `db_tools/test.js` first.
+
+### Deploy to SAM
+
+#### Create a bucket
+
+```bash
+aws s3 mb s3://traffic-cop-api --region us-east-1
+```
+
+#### Package
+
+```bash
+sam package --template-file aws/DynamoDB-Frontend.json \
+--s3-bucket traffic-cop-api \
+--output-template-file aws/packaged.yaml
+```
+
+#### Deploy
+
+```bash
+sam deploy --template-file ./aws/packaged.yaml \
+--stack-name "traffic-cop-query-engine" \
+--capabilities CAPABILITY_IAM
+```

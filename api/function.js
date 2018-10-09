@@ -19,33 +19,33 @@ exports.insertitem = (event, context, callback) => {
                 "M": {
                     "location": {
                         "L": [{
-                                "N": "-31.99388"
+                                "N": "-31.99588"
                             },
                             {
-                                "N": "115.9108"
+                                "N": "115.908"
                             }
                         ]
                     },
                     "ssid": {
                         "M": {
                             "channel": {
-                                "N": "12"
+                                "N": "6"
                             },
                             "rssi": {
-                                "N": "-90"
+                                "N": "-19"
                             },
                             "ssid": {
-                                "S": "Sauc3"
+                                "S": "HomeNet"
                             }
                         }
                     }
                 }
             },
-            "timestamp": {
-                "N": "1538917567782"
+            "ssid": {
+                "S": "HomeNet"
             },
-            "topic": {
-                "S": "hackathons/aws-devpost/gps-glover-01"
+            "timestamp": {
+                "N": "1538917579082"
             }
         }
     };

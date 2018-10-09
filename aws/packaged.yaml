@@ -1,0 +1,120 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Creates the API and deploys the lambda for accessing the DynamoDB data
+Outputs:
+  ApiUrl:
+    Description: URL of your API endpoint
+    Value:
+      Fn::Join:
+      - ''
+      - - https://
+        - Ref: DynamoDBApi
+        - .execute-api.
+        - Ref: AWS::Region
+        - .amazonaws.com/prod
+Resources:
+  DynamoDBApi:
+    Properties:
+      DefinitionBody:
+        definitions:
+          Empty:
+            title: Empty Schema
+            type: object
+        info:
+          title:
+            Ref: AWS::StackName
+        paths:
+          /:
+            get:
+              produces:
+              - application/json
+              responses:
+                '200':
+                  description: 200 response
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: string
+                  schema:
+                    $ref: '#/definitions/Empty'
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                responses:
+                  default:
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Origin: '''*'''
+                    statusCode: '200'
+                type: aws
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${DynamoDBScanFunction.Arn}/invocations
+            options:
+              consumes:
+              - application/json
+              produces:
+              - application/json
+              responses:
+                '200':
+                  description: 200 response
+                  headers:
+                    Access-Control-Allow-Headers:
+                      type: string
+                    Access-Control-Allow-Methods:
+                      type: string
+                    Access-Control-Allow-Origin:
+                      type: string
+                  schema:
+                    $ref: '#/definitions/Empty'
+              x-amazon-apigateway-integration:
+                passthroughBehavior: when_no_match
+                requestTemplates:
+                  application/json: '{"statusCode": 200}'
+                responses:
+                  default:
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Headers: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'''
+                      method.response.header.Access-Control-Allow-Methods: '''GET,OPTIONS'''
+                      method.response.header.Access-Control-Allow-Origin: '''*'''
+                    statusCode: '200'
+                type: mock
+        swagger: 2
+      StageName: prod
+    Type: AWS::Serverless::Api
+  DynamoDBInsertFunction:
+    Properties:
+      CodeUri: s3://waanimals-deployment-scripts/traffic-cop/dynamodb-api.zip
+      Description: Scan DynamoDB table
+      Environment:
+        Variables:
+          TABLE_NAME: TrafficCopLocations
+      Handler: function.insertitem
+      MemorySize: 128
+      Policies:
+      - CloudWatchPutMetricPolicy: {}
+      - DynamoDBCrudPolicy:
+          TableName: TrafficCopLocations
+      Runtime: nodejs6.10
+      Timeout: 10
+    Type: AWS::Serverless::Function
+  DynamoDBScanFunction:
+    Properties:
+      CodeUri: s3://waanimals-deployment-scripts/traffic-cop/dynamodb-api.zip
+      Description: Scan DynamoDB table
+      Environment:
+        Variables:
+          TABLE_NAME: TrafficCopLocations
+      Events:
+        GetApi:
+          Properties:
+            Method: GET
+            Path: /
+            RestApiId:
+              Ref: DynamoDBApi
+          Type: Api
+      Handler: function.scandb
+      MemorySize: 128
+      Policies:
+      - CloudWatchPutMetricPolicy: {}
+      - DynamoDBReadPolicy:
+          TableName: TrafficCopLocations
+      Runtime: nodejs6.10
+      Timeout: 10
+    Type: AWS::Serverless::Function
+Transform: AWS::Serverless-2016-10-31
