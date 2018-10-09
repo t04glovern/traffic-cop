@@ -22,13 +22,12 @@
         <div class='table-responsive'>
             <table class='table table-striped' style='display: none'>
                 <tr>
-                    <th>Topic</th>
+                    <th>SSID</th>
                     <th>Timestamp</th>
                     <th>Lat</th>
                     <th>Lng</th>
                     <th>Channel</th>
                     <th>RSSI</th>
-                    <th>SSID</th>
                 </tr>
             </table>
         </div>
@@ -40,38 +39,36 @@
     <script src='main.js'></script>
     <script>
         $(document).ready(function () {
-            var api_gateway_url = 'https://u0ttbl1mq3.execute-api.us-east-1.amazonaws.com/prod';
+            var api_gateway_url = 'https://edpq5mdima.execute-api.us-east-1.amazonaws.com/prod';
             var rows = [];
             $.get(api_gateway_url, function (data) {
                 data.forEach(function (item) {
-                    var topic = item['topic']['S'];
+                    var ssid = item['ssid']['S'];
                     var timestamp = item['timestamp']['N'];
                     var lat = item['payload']['M']['location']['L'][0]['N'];
                     var lng = item['payload']['M']['location']['L'][1]['N'];
                     var channel = item['payload']['M']['ssid']['M']['channel']['N'];
                     var rssi = item['payload']['M']['ssid']['M']['rssi']['N'];
-                    var ssid = item['payload']['M']['ssid']['M']['ssid']['S'];
 
                     rows.push(
                         `<tr> \
-                    <td>${topic}</td> \
+                    <td>${ssid}</td> \
                     <td>${timestamp}</td> \
                     <td>${lat}</td> \
                     <td>${lng}</td> \
                     <td>${channel}</td> \
                     <td>${rssi}</td> \
-                    <td>${ssid}</td> \
                 </tr>`
                     );
 
                     var circle = L.circle(
                         [lat, lng], {
-                        color: 'black',
-                        fillColor: '#000',
+                        color: '#F29B2D',
+                        fillColor: '#262F3E',
                         fillOpacity: 0.5,
-                        radius: 10
+                        radius: 20
                     }).addTo(leafletMap);
-                    circle.bindPopup(`<b>${ssid}</b></br>RSSI: ${rssi}</br>Channel: ${channel}</br>Device: ${topic}`);
+                    circle.bindPopup(`<b>${ssid}</b></br>RSSI: ${rssi}</br>Channel: ${channel}`);
                 });
                 // show the now filled table and hide the "loading" message
                 $('table.table').append(rows.join()).show();

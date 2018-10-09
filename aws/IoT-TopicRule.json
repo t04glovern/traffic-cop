@@ -50,7 +50,7 @@
                             },
                             "HashKeyField": "topic",
                             "HashKeyType": "STRING",
-                            "HashKeyValue": "${topic()}",
+                            "HashKeyValue": "${ssid.ssid}",
                             "RangeKeyField": "timestamp",
                             "RangeKeyType": "NUMBER",
                             "RangeKeyValue": "${timestamp()}",
@@ -72,7 +72,7 @@
             "Type": "AWS::DynamoDB::Table",
             "Properties": {
                 "AttributeDefinitions": [{
-                        "AttributeName": "topic",
+                        "AttributeName": "ssid",
                         "AttributeType": "S"
                     },
                     {
@@ -82,7 +82,7 @@
 
                 ],
                 "KeySchema": [{
-                        "AttributeName": "topic",
+                        "AttributeName": "ssid",
                         "KeyType": "HASH"
                     },
                     {
