@@ -1,5 +1,7 @@
 # Traffic Cop
 
+[http://traffic-cop.s3-website-us-east-1.amazonaws.com/](http://traffic-cop.s3-website-us-east-1.amazonaws.com/)
+
 WiFi Beacon & Client sniffing pipeline for analysing the movements of Human Traffickers.
 
 ## Authors
@@ -125,3 +127,38 @@ aws cloudformation describe-stacks --stack-name "TrafficCop-DynamoDB-API"  --que
 ```
 
 Place the output from this command into the `frontend/index.html` file under replacing the `api_gateway_url` variable.
+
+```html
+var api_gateway_url = 'https://<api_gateway_id>.execute-api.us-east-1.amazonaws.com/prod';
+```
+
+### Frontend
+
+Deploy the frontend HTML to an S3 bucket with site capability
+
+The bucket policy should be the following for public access
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "PublicReadGetObject",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": [
+                "s3:GetObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::traffic-cop/*"
+            ]
+        }
+    ]
+}
+```
+
+Push the frontend to the bucket.
+
+```bash
+aws s3 cp frontend/index.html s3://traffic-cop/index.html
+```
