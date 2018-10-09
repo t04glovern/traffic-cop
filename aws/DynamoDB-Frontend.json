@@ -1,0 +1,191 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Transform" : "AWS::Serverless-2016-10-31",
+    "Description": "Creates the API and deploys the lambda for accessing the DynamoDB data",
+    "Resources": {
+        "DynamoDBScanFunction": {
+            "Type": "AWS::Serverless::Function",
+            "Properties": {
+                "Handler": "function.scandb",
+                "Runtime": "nodejs6.10",
+                "CodeUri": "s3://waanimals-deployment-scripts/traffic-cop/dynamodb-api.zip",
+                "Description": "Scan DynamoDB table",
+                "MemorySize": 128,
+                "Timeout": 10,
+                "Policies": [{
+                        "CloudWatchPutMetricPolicy": {}
+                    },
+                    {
+                        "DynamoDBReadPolicy": {
+                            "TableName": "TrafficCopLocations"
+                        }
+                    }
+                ],
+                "Events": {
+                    "GetApi": {
+                        "Type": "Api",
+                        "Properties": {
+                            "Path": "/",
+                            "Method": "GET",
+                            "RestApiId": {
+                                "Ref": "DynamoDBApi"
+                            }
+                        }
+                    }
+                },
+                "Environment": {
+                    "Variables": {
+                        "TABLE_NAME": "TrafficCopLocations"
+                    }
+                }
+            }
+        },
+        "DynamoDBInsertFunction": {
+            "Type": "AWS::Serverless::Function",
+            "Properties": {
+                "Handler": "function.insertitem",
+                "Runtime": "nodejs6.10",
+                "CodeUri": "s3://waanimals-deployment-scripts/traffic-cop/dynamodb-api.zip",
+                "Description": "Scan DynamoDB table",
+                "MemorySize": 128,
+                "Timeout": 10,
+                "Policies": [{
+                        "CloudWatchPutMetricPolicy": {}
+                    },
+                    {
+                        "DynamoDBCrudPolicy": {
+                            "TableName": "TrafficCopLocations"
+                        }
+                    }
+                ],
+                "Environment": {
+                    "Variables": {
+                        "TABLE_NAME": "TrafficCopLocations"
+                    }
+                }
+            }
+        },
+        "DynamoDBApi": {
+            "Type": "AWS::Serverless::Api",
+            "Properties": {
+                "StageName": "prod",
+                "DefinitionBody": {
+                    "swagger": 2,
+                    "info": {
+                        "title": {
+                            "Ref": "AWS::StackName"
+                        }
+                    },
+                    "paths": {
+                        "/": {
+                            "get": {
+                                "produces": [
+                                    "application/json"
+                                ],
+                                "responses": {
+                                    "200": {
+                                        "description": "200 response",
+                                        "schema": {
+                                            "$ref": "#/definitions/Empty"
+                                        },
+                                        "headers": {
+                                            "Access-Control-Allow-Origin": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                },
+                                "x-amazon-apigateway-integration": {
+                                    "httpMethod": "POST",
+                                    "type": "aws",
+                                    "uri": {
+                                        "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${DynamoDBScanFunction.Arn}/invocations"
+                                    },
+                                    "responses": {
+                                        "default": {
+                                            "statusCode": "200",
+                                            "responseParameters": {
+                                                "method.response.header.Access-Control-Allow-Origin": "'*'"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "options": {
+                                "consumes": [
+                                    "application/json"
+                                ],
+                                "produces": [
+                                    "application/json"
+                                ],
+                                "responses": {
+                                    "200": {
+                                        "description": "200 response",
+                                        "schema": {
+                                            "$ref": "#/definitions/Empty"
+                                        },
+                                        "headers": {
+                                            "Access-Control-Allow-Origin": {
+                                                "type": "string"
+                                            },
+                                            "Access-Control-Allow-Methods": {
+                                                "type": "string"
+                                            },
+                                            "Access-Control-Allow-Headers": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                },
+                                "x-amazon-apigateway-integration": {
+                                    "responses": {
+                                        "default": {
+                                            "statusCode": "200",
+                                            "responseParameters": {
+                                                "method.response.header.Access-Control-Allow-Methods": "'GET,OPTIONS'",
+                                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                                                "method.response.header.Access-Control-Allow-Origin": "'*'"
+                                            }
+                                        }
+                                    },
+                                    "passthroughBehavior": "when_no_match",
+                                    "requestTemplates": {
+                                        "application/json": "{\"statusCode\": 200}"
+                                    },
+                                    "type": "mock"
+                                }
+                            }
+                        }
+                    },
+                    "definitions": {
+                        "Empty": {
+                            "type": "object",
+                            "title": "Empty Schema"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "Outputs": {
+        "ApiUrl": {
+            "Description": "URL of your API endpoint",
+            "Value": {
+                "Fn::Join": [
+                    "",
+                    [
+                        "https://",
+                        {
+                            "Ref": "DynamoDBApi"
+                        },
+                        ".execute-api.",
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        ".amazonaws.com/prod"
+                    ]
+                ]
+            }
+        }
+    }
+}

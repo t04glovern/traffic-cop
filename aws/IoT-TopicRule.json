@@ -71,26 +71,24 @@
         "TrafficCopGpsDynamoDBTable": {
             "Type": "AWS::DynamoDB::Table",
             "Properties": {
-                "AttributeDefinitions": [
-                    {
+                "AttributeDefinitions": [{
                         "AttributeName": "topic",
                         "AttributeType": "S"
-                      },
-                      {
+                    },
+                    {
                         "AttributeName": "timestamp",
                         "AttributeType": "N"
-                      }
+                    }
 
                 ],
-                "KeySchema": [
-                    {
+                "KeySchema": [{
                         "AttributeName": "topic",
                         "KeyType": "HASH"
-                      },
-                      {
+                    },
+                    {
                         "AttributeName": "timestamp",
                         "KeyType": "RANGE"
-                      }
+                    }
 
                 ],
                 "ProvisionedThroughput": {

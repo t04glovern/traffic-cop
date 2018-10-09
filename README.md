@@ -93,3 +93,33 @@ aws cloudformation create-stack --stack-name "TrafficCop-IoT-TopicRule" \
 --parameters file://aws/IoT-TopicRule-Params.json \
 --capabilities CAPABILITY_IAM
 ```
+
+### DynamoDB API
+
+Build the API zip
+
+```bash
+cd api
+./package-lambda.sh
+```
+
+Upload the API to S3 bucket (this same S3 bucket should be used in the Parameters of the `aws/DynamoDB-Frontend-Params.json` file)
+
+```bash
+cd api
+aws s3 cp dynamodb-api.zip s3://waanimals-deployment-scripts/traffic-cop/dynamodb-api.zip
+```
+
+Deploy the API to CloudFormation
+
+```bash
+aws cloudformation deploy --template-file aws/DynamoDB-Frontend.json \
+--stack-name "TrafficCop-DynamoDB-API" \
+--capabilities CAPABILITY_IAM
+```
+
+Retrieve the stacks API endpoint
+
+```bash
+aws cloudformation describe-stacks --stack-name "TrafficCop-DynamoDB-API"  --query Stacks[].Outputs[].OutputValue[] --output text
+```
