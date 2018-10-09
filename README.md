@@ -123,3 +123,5 @@ Retrieve the stacks API endpoint
 ```bash
 aws cloudformation describe-stacks --stack-name "TrafficCop-DynamoDB-API"  --query Stacks[].Outputs[].OutputValue[] --output text
 ```
+
+Place the output from this command into the `frontend/index.html` file under replacing the `api_gateway_url` variable.

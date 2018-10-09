@@ -11,7 +11,7 @@
     <div class='container'>
         <h1>DynamoDB table - Contents</h1>
         <p>This is a dynamic s3 website which uses API gateway and Lambda to scan a Dynamodb Table and displays in tabular format. </p>
-        <p id='loading'><em>Loading prices...</em></p>
+        <p id='loading'><em>Loading GPS points...</em></p>
         <div class='table-responsive'>
             <table class='table table-striped' style='display: none'>
                 <tr>
@@ -28,16 +28,16 @@
     <script>
     // Using good-old jQuery to fill the table with data received from the API Gateway endpoint
     $(document).ready(function() {
-        var api_gateway_url = 'https://u93hy7dazf.execute-api.us-east-1.amazonaws.com/prod';
+        var api_gateway_url = 'https://u0ttbl1mq3.execute-api.us-east-1.amazonaws.com/prod';
         var rows = [];
         $.get(api_gateway_url, function(data) {
             data.forEach(function(item) {
                 rows.push(`<tr> \
                     <td>${item['topic']['S']}</td> \
-                    <td>${item['timestamp']['S']}</td> \
-                    <td>${item['payload.lat']['S']}</td> \
-                    <td>${item['payload.lng']['S']}</td> \
-                    <td>${item['payload.ssid.ssid']['S']}</td> \
+                    <td>${item['timestamp']['N']}</td> \
+                    <td>${item['payload']['M']['lat']['S']}</td> \
+                    <td>${item['payload']['M']['lng']['S']}</td> \
+                    <td>${item['payload']['M']['ssid']['M']['ssid']['S']}</td> \
                 </tr>`);
             });
             // show the now filled table and hide the "loading" message
