@@ -4,6 +4,8 @@
 
 WiFi Beacon & Client sniffing pipeline for analysing the movements of Human Traffickers.
 
+![img/web-demo.png](img/web-demo.png)
+
 ## Authors
 
 * Nathan Glover [@nathangloverAUS (Twitter)](https://twitter.com/nathangloverAUS), [@t04glovern (Github)](https://github.com/t04glovern)
