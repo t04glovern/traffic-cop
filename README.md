@@ -162,3 +162,7 @@ Push the frontend to the bucket.
 ```bash
 aws s3 cp frontend/index.html s3://traffic-cop/index.html
 ```
+
+### Extras
+
+The `db_tools` can be used in order to add new entries to the DynamoDB instance manually while testing. To use it simply run `npm install` then `npm run test`. You will need to also change the DynamoDB instance name in `db_tools/test.js` first.

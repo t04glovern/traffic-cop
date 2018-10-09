@@ -19,6 +19,8 @@
                     <th>Timestamp</th>
                     <th>Lat</th>
                     <th>Lng</th>
+                    <th>Channel</th>
+                    <th>RSSI</th>
                     <th>SSID</th>
                 </tr>
             </table>
@@ -26,7 +28,6 @@
     </div>
     <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js'></script>
     <script>
-    // Using good-old jQuery to fill the table with data received from the API Gateway endpoint
     $(document).ready(function() {
         var api_gateway_url = 'https://u0ttbl1mq3.execute-api.us-east-1.amazonaws.com/prod';
         var rows = [];
@@ -35,8 +36,10 @@
                 rows.push(`<tr> \
                     <td>${item['topic']['S']}</td> \
                     <td>${item['timestamp']['N']}</td> \
-                    <td>${item['payload']['M']['lat']['S']}</td> \
-                    <td>${item['payload']['M']['lng']['S']}</td> \
+                    <td>${item['payload']['M']['location']['L'][0]['N']}</td> \
+                    <td>${item['payload']['M']['location']['L'][1]['N']}</td> \
+                    <td>${item['payload']['M']['ssid']['M']['channel']['N']}</td> \
+                    <td>${item['payload']['M']['ssid']['M']['rssi']['N']}</td> \
                     <td>${item['payload']['M']['ssid']['M']['ssid']['S']}</td> \
                 </tr>`);
             });

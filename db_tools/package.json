@@ -1,0 +1,12 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "author": "Nathan Glover <nathan@glovers.id.au>",
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.100.0"
+  }
+}

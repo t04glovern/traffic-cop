@@ -1,17 +1,11 @@
 var aws = require('aws-sdk');
-var dynamodb = new aws.DynamoDB();
-// Update the Table name below
-var tablename = process.env.TABLE_NAME;
+var dynamodb = new aws.DynamoDB({
+    region: "us-east-1"
+});
 
-exports.scandb = (event, context, callback) => {
-    dynamodb.scan({
-        TableName: tablename
-    }, (err, data) => {
-        callback(null, data['Items']);
-    });
-};
+var tablename = "TrafficCopLocations";
 
-exports.insertitem = (event, context, callback) => {
+insertitem = (event, context, callback) => {
     var params = {
         TableName: tablename,
         Item: {
@@ -58,3 +52,5 @@ exports.insertitem = (event, context, callback) => {
         }
     });
 };
+
+insertitem();
