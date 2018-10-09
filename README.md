@@ -160,7 +160,7 @@ The bucket policy should be the following for public access
 Push the frontend to the bucket.
 
 ```bash
-aws s3 cp frontend/index.html s3://traffic-cop/index.html
+aws s3 sync frontend/ s3://traffic-cop/
 ```
 
 ### Extras
