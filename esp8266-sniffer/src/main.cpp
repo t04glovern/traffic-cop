@@ -1,5 +1,5 @@
 /*
- * By Lars Juhl Jensen 20170415 compiled on OS X using Arduino 1.8.2
+ * Modified from Lars Juhl Jensons phatsniffer https://github.com/larsjuhljensen/phatsniffer/blob/master/esp8266/jsonsniffer.ino
  * Distributed under the MIT license (URL)
  *
  * Based on Ray Burnette's ESP8266 Mini Sniff (MIT) https://www.hackster.io/rayburne/esp8266-mini-sniff-f6b93a
@@ -12,15 +12,17 @@
  */
 
 #include <ESP8266WiFi.h>
-
+#include <stephenstring.h>
 //required for PJON
+#define SWBB_MODE 1
+#define SWBB_RESPONSE_TIMEOUT 150000
+#define SWBB_MAX_ATTEMPTS       40
 #include <PJON.h>
 #define PJON_PIN D1
 #define MASTER_BUS_ID 45
 #define SLAVE_BUS_ID 44
-#define BAUD_RATE 115200
-#define SWBB_MODE 1
-#define SWBB_RESPONSE_TIMEOUT 1500
+#define BAUD_RATE 9600
+
 
 /*
  * Constants.
@@ -465,66 +467,77 @@ void print_all()
 
 void sendStringToBus(char *stringToSend)
 {
-  bus.send_packet(SLAVE_BUS_ID, stringToSend, strlen(stringToSend));
+  Serial.println();
+  Serial.print("Packet Response Code: ");
+  Serial.print(bus.send_packet(SLAVE_BUS_ID, stringToSend, strlen(stringToSend)));
+  Serial.println();
 }
 
-void send_beacon(beaconinfo bi)
+/*
+ * Function that prints single client in JSON format
+ */
+StephenString concat_client(clientinfo ci)
 {
-  char stringbuff[254];
-  //sendStringToBus("\"");
+  StephenString concatstring{"\""};
+  char sprintfbuff[256];
   for (int i = 0; i < ETH_MAC_LEN; i++)
   {
-    if (i > 0) {
-      //sendStringToBus(":");
+    if (i > 0)
+    {
+      concatstring = concatstring + ":";
+      sprintf(sprintfbuff,"%02x", ci.station[i]);
+      concatstring = concatstring + sprintfbuff;
     }
-    sprintf(stringbuff, "%02x", bi.beacon[i]);
-    //sendStringToBus(stringbuff);
+    concatstring = concatstring + "\":{\"beacon\":\"";
   }
-  memset(stringbuff, 0, sizeof(stringbuff));
-  //sprintf(stringbuff, "\":{\"channel\":%d,\"rssi\":-%d,\"ssid\":\"%s\"}", bi.channel, bi.rssi, bi.ssid);
-  sprintf(stringbuff + strlen(stringbuff), "{\"channel\":%d,\"rssi\":-%d,\"ssid\":\"%s\"}", bi.channel, bi.rssi, bi.ssid);
-  sendStringToBus(stringbuff);
+  for (int i = 0; i < ETH_MAC_LEN; i++)
+  {
+    if (i > 0)
+    {
+      concatstring = concatstring +  ":";
+      strcpy(sprintfbuff,"");
+      sprintf(sprintfbuff,"%02x", ci.beacon[i]);
+      concatstring = concatstring + sprintfbuff;
+    }
+  }
+  strcpy(sprintfbuff,"");
+  sprintf(sprintfbuff, "\",\"rssi\":-%d}", ci.rssi);
+  concatstring = concatstring + sprintfbuff;
+  return concatstring;
 }
 
-void send_client(clientinfo ci)
-{
-  char stringbuff[254];
-  //sendStringToBus("\"");
-  for (int i = 0; i < ETH_MAC_LEN; i++)
-  {
-    if (i > 0) {
-      //sendStringToBus(":");
-    }
-    sprintf(stringbuff, "%02x", ci.station[i]);
-    //sendStringToBus(stringbuff);
-  }
-  //sendStringToBus("\":{\"beacon\":\"");
-  for (int i = 0; i < ETH_MAC_LEN; i++)
-  {
-    if (i > 0) {
-      //sendStringToBus(":");
-    }
-    memset(stringbuff, 0, sizeof(stringbuff));
-    sprintf(stringbuff, "%02x", ci.beacon[i]);
-    //sendStringToBus(stringbuff);
-  }
-  memset(stringbuff, 0, sizeof(stringbuff));
-  sprintf(stringbuff, "\",\"rssi\":-%d}", ci.rssi);
-  //sendStringToBus(stringbuff);
-}
+/*
+ * Function that prints all beacons in JSON format
+ */
 
-////
+ StephenString concat_beacon(beaconinfo bi){
+   char sprintfbuff[256];
+   StephenString concatstring{"/"};
+   for (int i = 0; i < ETH_MAC_LEN; i++)
+   {
+     if (i > 0)
+       concatstring = concatstring + ":";
+       sprintf(sprintfbuff,"%02x", bi.beacon[i]);
+       concatstring = concatstring + sprintfbuff;
+   }
+   strcpy(sprintfbuff,"");
+   sprintf(sprintfbuff,"\":{\"channel\":%d,\"rssi\":-%d,\"ssid\":\"%s\"}", bi.channel, bi.rssi, bi.ssid);
+   concatstring = concatstring + sprintfbuff;
+   return concatstring;
+ }
+
 void send_beacons()
 {
-  //sendStringToBus("{");
+  StephenString strbuff{"{"};
   for (int u = 0; u < beacons_count; u++)
   {
-    if (u > 0) {
-      //sendStringToBus(",");
-    }
-    send_beacon(beacons_known[u]);
+    if (u > 0)
+      strbuff = strbuff+ ",";
+    strbuff = strbuff + concat_beacon(beacons_known[u]);
   }
-  //sendStringToBus("}");
+  strbuff = strbuff + "}";
+  Serial.print(strbuff.cstr());
+  sendStringToBus(strbuff.cstr());
 }
 
 /*
@@ -532,30 +545,28 @@ void send_beacons()
  */
 void send_clients()
 {
-  sendStringToBus("{");
+  StephenString strbuff{"{"};
   for (int u = 0; u < clients_count; u++)
   {
-    if (u > 0) {
-      sendStringToBus(",");
-    }
-    send_client(clients_known[u]);
+    if (u > 0)
+    strbuff = strbuff + ",";
+    strbuff = strbuff + concat_client(clients_known[u]);
   }
-  sendStringToBus("}");
+  strbuff = strbuff + "}";
+  Serial.print(strbuff.cstr());
+  sendStringToBus(strbuff.cstr());
+
 }
-/*
- * Initial setup
- */
+
 void setup()
 {
   Serial.begin(115200);
-
-  wifi_set_opmode(STATION_MODE);
+   wifi_set_opmode(STATION_MODE);
   wifi_set_channel(channel);
   wifi_promiscuous_enable(0);
   wifi_set_promiscuous_rx_cb(parse_packet);
   wifi_promiscuous_enable(1);
-
-  //set up PJON bus.
+   //set up PJON bus.
   bus.strategy.set_pin(PJON_PIN);
   bus.begin();
 }
@@ -577,10 +588,8 @@ void loop()
   {
     nothing_new++;
   }
-  //fake_beacon(fake_beacon_ssid[channel - 1], 4);
-  delay(1);
+  delay(2000);
   send_beacons();
-  //print_beacons();
-  //send_clients();
-  //print_clients();
+  delay(2000);
+  send_clients();
 }
