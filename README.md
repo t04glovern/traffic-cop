@@ -10,6 +10,7 @@ WiFi Beacon & Client sniffing pipeline for analysing the movements of Human Traf
 
 * Nathan Glover [@nathangloverAUS (Twitter)](https://twitter.com/nathangloverAUS), [@t04glovern (Github)](https://github.com/t04glovern)
 * Stephen Mott [@SrzStephen (Github)](https://github.com/SrzStephen)
+* Rico Beti [@SilentyByte (Github)](https://github.com/SilentByte)
 
 ## Proof of Concept
 
@@ -23,7 +24,7 @@ WiFi Beacon & Client sniffing pipeline for analysing the movements of Human Traf
 
 * [2x NodeMCU 1.0 (ESP 12 E Module)](https://www.amazon.com/NodeMCU-ESP8266-Microcontroller-Arduino-Makerdo/dp/B07BGCF3NY)
 * [1x U-blox NEO-6M GPS Module](https://core-electronics.com.au/u-blox-neo-6m-gps-module.html)
-* 1x ~2kΩ+ Resistor
+* 1x ~200kΩ+ Resistor
 * 5x M2M Jumper Wires
 
 ## Architecture
