@@ -64,7 +64,7 @@
                     }],
                     "AwsIotSqlVersion": "2016-03-23",
                     "RuleDisabled": false,
-                    "Sql": "SELECT * FROM 'hackathons/aws-devpost/*' WHERE location <> [0, 0] AND ssid.ssid <> \"\""
+                    "Sql": "SELECT * FROM 'hackathons/aws-devpost/gps-glover-01' WHERE location <> [0, 0] AND ssid.ssid <> \"\""
                 }
             }
         },

@@ -58,7 +58,7 @@ void receiver_function(uint8_t *payload, uint16_t length, const PJON_Packet_Info
         tmp_ssid_str += char(payload[ii]);
     }
     JsonObject &tmp_ssid = jsonBuffer.parseObject(tmp_ssid_str);
-    if (tmp_ssid["ssid"] != "")
+    if (tmp_ssid["ssid"] != "" && tmp_ssid["ssid"] != ssid)
     {
         ssid_str = tmp_ssid_str;
     }
